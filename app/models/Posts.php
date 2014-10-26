@@ -339,7 +339,7 @@ class Posts extends Model
             && $this->number_replies == 0
             && $this->categories_id != 15
             && //announcements
-            $this->categories_id != 4
+            $this->categories_id != 1
             && //offtopic
             $this->categories_id != 7
             && //jobs
