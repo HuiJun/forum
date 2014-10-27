@@ -17,8 +17,10 @@
 
 namespace Phosphorum\Controllers;
 
-use Phosphorum\Github\OAuth;
+use Phosphorum\Github\OAuth as GithubOAuth;
 use Phosphorum\Github\Users as GithubUsers;
+use Phosphorum\Facebook\OAuth as FacebookOAuth;
+use Phosphorum\Facebook\Users as FacebookUsers;
 use Phosphorum\Models\Users as ForumUsers;
 use Phosphorum\Models\Karma;
 use Phosphorum\Models\NotificationsBounces;
@@ -64,9 +66,8 @@ class SessionController extends Controller
      */
     public function authorizeAction()
     {
-
         if (!$this->session->get('identity')) {
-            $oauth = new OAuth($this->config->github);
+            $oauth = $this->getOAuth();
             return $oauth->authorize();
         }
 
@@ -78,20 +79,21 @@ class SessionController extends Controller
      */
     public function accessTokenAction()
     {
-        $oauth = new OAuth($this->config->github);
+        $oauth = $this->getOAuth();
+        $oauth_client = $this->getOAuthConfig();
 
         $response = $oauth->accessToken();
         if (is_array($response)) {
 
             if (isset($response['error'])) {
-                $this->flashSession->error('Github: ' . $response['error']);
+                $this->flashSession->error(ucwords($oauth_client).': ' . $response['error']);
                 return $this->indexRedirect();
             }
 
-            $githubUser = new GithubUsers($response['access_token']);
+            $oauthUser = $this->getOAuthUser($response['access_token']);
 
-            if (!$githubUser->isValid()) {
-                $this->flashSession->error('Invalid Github response. Please try again');
+            if (!$oauthUser->isValid()) {
+                $this->flashSession->error('Invalid '.ucwords($oauth_client).' response. Please try again');
                 return $this->indexRedirect();
             }
 
@@ -115,9 +117,9 @@ class SessionController extends Controller
             /**
              * Update the user information
              */
-            $user->name  = $githubUser->getName();
-            $user->login = $githubUser->getLogin();
-            $email       = $githubUser->getEmail();
+            $user->name  = $oauthUser->getName();
+            $user->login = $oauthUser->getLogin();
+            $email       = $oauthUser->getEmail();
 
             if (is_string($email)) {
                 $user->email = $email;
@@ -129,7 +131,7 @@ class SessionController extends Controller
                 }
             }
 
-            $user->gravatar_id = $githubUser->getGravatarId();
+            $user->gravatar_id = $oauthUser->getGravatarId();
             if (!$user->gravatar_id) {
                 if ($user->email && strpos($user->email, '@') !== false) {
                     $user->gravatar_id = md5(strtolower($user->email));
@@ -231,6 +233,39 @@ class SessionController extends Controller
 
         $this->flashSession->error('Invalid Github response. Please try again');
         return $this->discussionsRedirect();
+    }
+
+    private function getOAuth() {
+        $oauth_client = $this->getOAuthConfig();
+        switch($oauth_client) {
+            case 'github' :
+                $oauth = new GithubOAuth($this->config->$oauth_client);
+                break;
+            case 'facebook' :
+                $oauth = new FacebookOAuth($this->config->$oauth_client);
+                break;
+            default:
+                break;
+        }
+        return $oauth;
+    }
+
+    private function getOAuthUser($access_token) {
+        switch($this->getOAuthConfig()) {
+            case 'github':
+                $oauthUser = new GithubUsers($access_token);
+                break;
+            case 'facebook':
+                $oauthUser = new FacebookUsers($access_token);
+                break;
+            default:
+                break;
+        }
+        return $oauthUser;
+    }
+
+    private function getOAuthConfig() {
+        return $this->config->oauth_client['default'];
     }
 
     /**
