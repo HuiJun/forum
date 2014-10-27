@@ -62,6 +62,12 @@ return new \Phalcon\Config(array(
         'redirectUri'  => 'http://pforum.loc/login/oauth/access_token/'
     ),
 
+    'facebook'      => array(
+        'clientId'     => '',
+        'clientSecret' => '',
+        'redirectUri'  => 'http://pforum.loc/login/oauth/access_token/'
+    ),
+
     'amazonSns'   => array(
         'secret' => ''
     ),
