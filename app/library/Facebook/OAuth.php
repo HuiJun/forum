@@ -32,7 +32,7 @@ class OAuth extends Injectable
 
     protected $endPointAccessToken = 'https://graph.facebook.com/oauth/access_token';
 
-    protected $scope = array('email','public_profile');
+    protected $scope;
 
     protected $redirectUriAuthorize;
 
@@ -52,6 +52,7 @@ class OAuth extends Injectable
         $this->redirectUriAuthorize = $config->redirectUri;
         $this->clientId             = $config->clientId;
         $this->clientSecret         = $config->clientSecret;
+        $this->scope                = isset($config->scope) ? $config->scope : array('email','public_profile');
     }
 
     /**
@@ -61,14 +62,13 @@ class OAuth extends Injectable
     {
         $this->view->disable();
 
-        $key   = $this->security->getTokenKey();
-        $token = $this->security->getToken();
         $scope = is_array($this->scope) ? implode(',',$this->scope) : '';
 
         $url = $this->endPointAuthorize . '?client_id=' . $this->clientId . '&redirect_uri='
-            . $this->redirectUriAuthorize . urlencode('&statekey=' . $key)
+            . $this->redirectUriAuthorize
             . // add the tokenkey as a query param. Then we will be able to use it to check token authenticity
-            '&state=' . $token . '&scope='.$scope;
+            '&scope='.$scope;
+
         $this->response->redirect($url, true);
     }
 
@@ -77,22 +77,22 @@ class OAuth extends Injectable
      */
     public function accessToken()
     {
+        $this->view->disable();
 
         // check the securtity - anti csrf token
-        $key   = $this->request->getQuery('statekey');
-        $value = $this->request->getQuery('state');
-
-        if (!$this->di["security"]->checkToken($key, $value)) {
+        if ($this->request->getQuery('error')) {
             return false;
         }
 
-        $this->view->disable();
+        $code   = $this->request->getQuery('code');
+
         $params   = array(
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'code'          => $this->request->getQuery('code'),
-            'state'         => $this->request->getQuery('state')
+            'redirect_uri'  => $this->redirectUriAuthorize,
+            'code'          => $code,
         );
+
         $response = $this->send($this->endPointAccessToken, $params);
 
         return $response;

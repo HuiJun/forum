@@ -237,31 +237,19 @@ class SessionController extends Controller
 
     private function getOAuth() {
         $oauth_client = $this->getOAuthConfig();
-        switch($oauth_client) {
-            case 'github' :
-                $oauth = new GithubOAuth($this->config->$oauth_client);
-                break;
-            case 'facebook' :
-                $oauth = new FacebookOAuth($this->config->$oauth_client);
-                break;
-            default:
-                break;
+        $oauth_class  = ucfirst($oauth_client).'OAuth';
+        if(class_exists($oauth_class)) {
+            return new $oauth_class($this->config->$oauth_client);
         }
-        return $oauth;
+        return false;
     }
 
     private function getOAuthUser($access_token) {
-        switch($this->getOAuthConfig()) {
-            case 'github':
-                $oauthUser = new GithubUsers($access_token);
-                break;
-            case 'facebook':
-                $oauthUser = new FacebookUsers($access_token);
-                break;
-            default:
-                break;
+        $oauth_users_class  = ucfirst($this->getOAuthConfig()).'Users';
+        if(class_exists($oauth_users_class)) {
+            return new $oauth_users_class($access_token);
         }
-        return $oauthUser;
+        return false;
     }
 
     private function getOAuthConfig() {

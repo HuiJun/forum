@@ -27,7 +27,7 @@ use Guzzle\Http\Client as HttpClient;
 class Users
 {
 
-    protected $endPoint = 'https://graph.facebook.com';
+    protected $endPoint = 'https://graph.facebook.com/v2.1';
 
     protected $accessToken;
 
@@ -53,8 +53,13 @@ class Users
     {
         try {
             $client = new HttpClient();
+            if(preg_match('@\?@si',$method))
+                $seperate = '&';
+            else
+                $seperate = '?';
+
             return @json_decode(
-                $client->get($this->endPoint . $method . '?access_token=' . $this->accessToken)->send()->getBody(),
+                $client->get($this->endPoint . $method . $seperate  . 'access_token=' . $this->accessToken)->send()->getBody(),
                 true
             );
         } catch (\Exception $e) {
@@ -82,7 +87,7 @@ class Users
                 return $this->response['name'];
             }
         }
-        return $this->response['login'];
+        return $this->response['id'];
     }
 
     /**
@@ -97,7 +102,7 @@ class Users
             }
         }
 
-        $emails = $this->request('/me/emails');
+        $emails = $this->request('/me?fields=email');
         if (count($emails)) {
             return $emails[0];
         }
@@ -111,7 +116,7 @@ class Users
     public function getLogin()
     {
         error_log(print_r($this->response,true));
-        return $this->response['login'];
+        return $this->response['id'];
     }
 
     /**
@@ -119,7 +124,7 @@ class Users
      */
     public function getGravatarId()
     {
-        error_log(print_r($this->response,true));
-        return $this->response['gravatar_id'];
+        $profile_image = $this->request('/'.$this->response['id'].'/picture');
+        return isset($profile_image['data']['url']) ? $profile_image['data']['url'] : '';
     }
 }
