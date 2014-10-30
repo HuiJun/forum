@@ -85,16 +85,14 @@ class OAuth extends Injectable
         }
 
         $code   = $this->request->getQuery('code');
-
         $params   = array(
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
             'redirect_uri'  => $this->redirectUriAuthorize,
+            'grant_type'    => 'authorization_code',
             'code'          => $code,
         );
-
-        $response = $this->send($this->endPointAccessToken, $params);
-
+        parse_str($this->send($this->endPointAccessToken, $params),$response);
         return $response;
     }
 
@@ -126,7 +124,7 @@ class OAuth extends Injectable
                     throw new \Exception('Invalid HTTP method');
             }
 
-            return json_decode((string)$request->send()->getBody(), true);
+            return (string)$request->send()->getBody();
 
         } catch (\Exception $e) {
             //file_put_contents('error.txt', $e->getMessage());

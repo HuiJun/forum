@@ -83,6 +83,7 @@ class SessionController extends Controller
         $oauth_client = $this->getOAuthConfig();
 
         $response = $oauth->accessToken();
+
         if (is_array($response)) {
 
             if (isset($response['error'])) {
@@ -91,7 +92,6 @@ class SessionController extends Controller
             }
 
             $oauthUser = $this->getOAuthUser($response['access_token']);
-
             if (!$oauthUser->isValid()) {
                 $this->flashSession->error('Invalid '.ucwords($oauth_client).' response. Please try again');
                 return $this->indexRedirect();
@@ -231,25 +231,31 @@ class SessionController extends Controller
             return $this->discussionsRedirect();
         }
 
-        $this->flashSession->error('Invalid Github response. Please try again');
+        $this->flashSession->error('Invalid '.ucfirst($this->getOAuthConfig()).' response. Please try again');
         return $this->discussionsRedirect();
     }
 
     private function getOAuth() {
         $oauth_client = $this->getOAuthConfig();
-        $oauth_class  = ucfirst($oauth_client).'OAuth';
-        if(class_exists($oauth_class)) {
-            return new $oauth_class($this->config->$oauth_client);
+        switch($oauth_client) {
+            case 'github':
+                return new GithubOAuth($this->config->$oauth_client);
+            case 'facebook':
+                return new FacebookOAuth($this->config->$oauth_client);
+            default:
+                return false;
         }
-        return false;
     }
 
     private function getOAuthUser($access_token) {
-        $oauth_users_class  = ucfirst($this->getOAuthConfig()).'Users';
-        if(class_exists($oauth_users_class)) {
-            return new $oauth_users_class($access_token);
+        switch($this->getOAuthConfig()) {
+            case 'github':
+                return new GithubUsers($access_token);
+            case 'facebook':
+                return new FacebookUsers($access_token);
+            default:
+                return false;
         }
-        return false;
     }
 
     private function getOAuthConfig() {
