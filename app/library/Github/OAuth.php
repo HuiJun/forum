@@ -65,7 +65,7 @@ class OAuth extends Injectable
         $url = $this->endPointAuthorize . '?client_id=' . $this->clientId . '&redirect_uri='
             . $this->redirectUriAuthorize . urlencode('&statekey=' . $key)
             . // add the tokenkey as a query param. Then we will be able to use it to check token authenticity
-            '&state=' . $token . '&scope=user:email';
+            '&state=' . $token;
         $this->response->redirect($url, true);
     }
 
