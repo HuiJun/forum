@@ -64,10 +64,10 @@ class SessionController extends Controller
     /**
      * @return \Phalcon\Http\ResponseInterface|void
      */
-    public function authorizeAction()
+    public function authorizeAction($oauth_client = '')
     {
         if (!$this->session->get('identity')) {
-            $oauth = $this->getOAuth();
+            $oauth = $this->getOAuth($oauth_client);
             return $oauth->authorize();
         }
 
@@ -79,8 +79,8 @@ class SessionController extends Controller
      */
     public function accessTokenAction()
     {
-        $oauth = $this->getOAuth();
         $oauth_client = $this->getOAuthConfig();
+        $oauth = $this->getOAuth();
 
         $response = $oauth->accessToken();
 
@@ -235,8 +235,9 @@ class SessionController extends Controller
         return $this->discussionsRedirect();
     }
 
-    private function getOAuth() {
-        $oauth_client = $this->getOAuthConfig();
+    private function getOAuth($oauth_client = '') {
+        $oauth_client = $this->getOAuthConfig($oauth_client);
+
         switch($oauth_client) {
             case 'github':
                 return new GithubOAuth($this->config->$oauth_client);
@@ -247,8 +248,8 @@ class SessionController extends Controller
         }
     }
 
-    private function getOAuthUser($access_token) {
-        switch($this->getOAuthConfig()) {
+    private function getOAuthUser($access_token, $oauth_client = '') {
+        switch($this->getOAuthConfig($oauth_client)) {
             case 'github':
                 return new GithubUsers($access_token);
             case 'facebook':
@@ -258,8 +259,11 @@ class SessionController extends Controller
         }
     }
 
-    private function getOAuthConfig() {
-        return $this->config->oauth_client['default'];
+    private function getOAuthConfig($oauth_client) {
+        if(!$oauth_client)
+            return $this->config->oauth_client['default'];
+        else
+            return $oauth_client;
     }
 
     /**

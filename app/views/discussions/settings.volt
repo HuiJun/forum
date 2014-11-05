@@ -13,7 +13,7 @@
 				<td align="left" valign="top">
 					<h1>{{ user.name|e }}</h1>
 					<p>
-						<span>joined <b>{{ date('M d/Y', user.created_at) }}</b></span><br>
+						<span>joined <b>{{ date('M d Y', user.created_at) }}</b></span><br>
 						<span>posts <b>{{ numberPosts }}</b></span> / <span>replies <b>{{ numberReplies }}</b></span><br>
 						<span>reputation <b>{{ user.karma }}</b></span><br>
 						<span>votes available <b>{{ user.votes }}</b></span><br>

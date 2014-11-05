@@ -218,10 +218,11 @@ $router->add(
 );
 
 $router->add(
-    '/login/oauth/authorize',
+    '/login/oauth/authorize/:params',
     array(
        'controller' => 'session',
-       'action'     => 'authorize'
+       'action'     => 'authorize',
+       'params'     => 1,
     )
 );
 
