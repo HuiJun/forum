@@ -27,7 +27,7 @@
 								<table width="100%">
 									<tr>
 										<td><input type="text" class="form-control" name="q"></td>
-										<td>&nbsp;<input type="submit" class="btn btn-primary" value="Search"></td>
+										<td><input type="submit" class="btn btn-primary" style="margin-left:10px;" value="Search"></td>
 									</tr>
 								</table>
 							</form>

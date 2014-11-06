@@ -96,7 +96,7 @@
 				<span>{{ link_to('user/' ~ post.user.id ~ '/' ~ post.user.login, post.user.name|e, 'class': 'user-moderator-' ~ post.user.moderator) }}</span><br>
 				<span class="karma">{{ post.user.getHumanKarma() }}</span>
 			</div>
-			<div class="col-md-11 post-body{% if (post.votes_up - post.votes_down) <= -3 %} post-negative-body{% endif %}">
+			<div class="col-md-10 post-body{% if (post.votes_up - post.votes_down) <= -3 %} post-negative-body{% endif %}">
 				<div class="posts-buttons" align="right">
 					{% if post.edited_at > 0 %}
 						<span class="action-date action-edit" data-id="{{ post.id }}" data-toggle="modal" data-target="#historyModal">
@@ -160,7 +160,7 @@
 						</div>
 					{%- endif -%}
 				</div>
-				<div class="col-md-11">
+				<div class="col-md-10">
 					{%- if reply.in_reply_to_id > 0 -%}
 						{%- set inReplyTo = reply.postReplyTo -%}
 						{%- if inReplyTo -%}
@@ -240,7 +240,7 @@
 						<img src="https://secure.gravatar.com/avatar/{{ session.get('identity-gravatar') }}?s=48&amp;r=pg&amp;d=identicon" class="img-rounded" width="48" height="48"><br>
 						<span>{{ link_to('', 'You') }}</span>
 					</div>
-					<div class="col-md-11">
+					<div class="col-md-10">
 
 						<ul class="nav nav-tabs preview-nav">
 							<li class="active"><a href="#" onclick="return false">Comment</a></li>
