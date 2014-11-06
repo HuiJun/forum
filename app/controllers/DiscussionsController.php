@@ -972,6 +972,7 @@ class DiscussionsController extends Controller
         }
 
         $this->view->user = $user;
+        $this->view->profile_link = $this->config->oauth_client['default'];
 
         $parametersNumberPosts              = array(
             'users_id = ?0 AND deleted = 0',

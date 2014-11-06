@@ -16,7 +16,7 @@
 						<span>posts <b>{{ numberPosts }}</b></span> / <span>replies <b>{{ numberReplies }}</b></span><br>
 						<span>reputation <b>{{ user.karma }}</b></span><br>
 						<span>reputation ranking <b>#{{ ranking }}</b> of <b>{{ total_ranking }}</b></span><br>
-						<a href="https://github.com/{{ user.login }}">Github Profile</a>
+						<a href="https://{{ profile_link }}.com/{{ user.login }}">{{ profile_link|capitalize }} Profile</a>
 					</p>
 					<p>
 						{% for badge in user.badges %}
