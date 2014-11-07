@@ -50,16 +50,14 @@ class Indexer
             } else {
                 $terms = array();
                 foreach ($fields as $field => $value) {
-                    $terms[] = array('term' => array($field => $value));
+                    $terms[] = array('match' => array($field => $value));
                 }
                 $searchParams['body']['query']['bool']['must'] = $terms;
             }
 
             $searchParams['body']['from'] = 0;
             $searchParams['body']['size'] = $limit;
-
             $queryResponse = $client->search($searchParams);
-
             $results = array();
             if (is_array($queryResponse['hits'])) {
                 $d = 0.5;
