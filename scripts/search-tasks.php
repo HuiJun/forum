@@ -30,7 +30,7 @@ class SearchTasks extends Injectable
     {
         $search = new Indexer();
         $search->indexAll();
-        print_r($search->searchCommon(array('title' => 'ubuntu', 'category' => 6)));
+        //print_r(json_decode($search->searchCommon(array('title' => 'test', 'category' => 1)),true), true);
     }
 }
 
