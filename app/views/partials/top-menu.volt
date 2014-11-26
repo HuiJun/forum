@@ -77,9 +77,9 @@
 		  </ul>
 
 			{%- if session.get('identity') -%}
-				{{ link_to('post/discussion', '<span class="glyphicon glyphicon-plus"></span> Start a Discussion', 'class': 'btn btn-default btn-primary navbar-btn navbar-right', 'rel': 'nofollow') }}
+				{{ link_to('post/discussion', '<span class="glyphicon glyphicon-plus"></span> Start a Discussion', 'class': 'btn btn-default btn-primary navbar-btn navbar-right', 'rel': 'nofollow', 'style': 'margin-right:10px') }}
 			{%- else -%}
-				{{ link_to('login/oauth/authorize', '<span class="glyphicon glyphicon-user"></span> Log In with ' ~ config.oauth_client.default|capitalize, 'class': 'btn btn-default btn-primary navbar-btn navbar-right', 'rel': 'nofollow') }}
+				{{ link_to('login/oauth/authorize', '<span class="glyphicon glyphicon-user"></span> Log In with ' ~ config.oauth_client.default|capitalize, 'class': 'btn btn-default btn-primary navbar-btn navbar-right', 'rel': 'nofollow', 'style': 'margin-right:10px') }}
 			{%- endif -%}
 		</div>
 	  </div>
