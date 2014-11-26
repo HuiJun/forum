@@ -96,6 +96,7 @@ pre.prettyprint {
 .action-reply-edit {
     color: #ea7c62;
     cursor: pointer;
+    float: right;
 }
 
 .post-content {
