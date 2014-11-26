@@ -102,9 +102,12 @@ class SessionController extends Controller
              */
             $user = ForumUsers::findFirstByAccessToken($response['access_token']);
             if ($user == false) {
-                $user               = new ForumUsers();
-                $user->token_type   = $response['token_type'];
-                $user->access_token = $response['access_token'];
+                $user = ForumUsers::findFirstByEmail($oauthUser->getEmail());
+                if ($user == false) {
+                    $user               = new ForumUsers();
+                    $user->token_type   = $response['token_type'];
+                    $user->access_token = $response['access_token'];
+                }
             }
 
             if ($user->banned == 'Y') {
