@@ -71,6 +71,7 @@ class DiscussionsController extends Controller
             ->modelsManager
             ->createBuilder()
             ->from(array('p' => 'Phosphorum\Models\Posts'))
+            ->join('Phosphorum\Models\Categories', "c.id = p.categories_id", 'c')
             ->orderBy('p.sticked DESC, p.created_at DESC');
 
         if ($joinReply) {
@@ -131,7 +132,7 @@ class DiscussionsController extends Controller
 
             case 'unanswered':
                 $this->tag->setTitle('Unanswered Discussions');
-                $unansweredConditions = 'p.number_replies = 0 AND p.accepted_answer <> "Y"';
+                $unansweredConditions = 'p.number_replies = 0 AND p.accepted_answer <> "Y" AND c.no_bounty = "0"';
                 $itemBuilder->where($unansweredConditions);
                 $totalBuilder->where($unansweredConditions);
                 break;
