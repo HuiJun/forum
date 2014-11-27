@@ -91,7 +91,7 @@ class SessionController extends Controller
                 return $this->indexRedirect();
             }
 
-            $oauthUser = $this->getOAuthUser($response['access_token']);
+            $oauthUser = $this->getOAuth($oauth_client, $response['access_token']);
             if (!$oauthUser->isValid()) {
                 $this->flashSession->error('Invalid '.ucwords($oauth_client).' response. Please try again');
                 return $this->indexRedirect();
@@ -238,28 +238,18 @@ class SessionController extends Controller
         return $this->discussionsRedirect();
     }
 
-    private function getOAuth($oauth_client = '') {
+    private function getOAuth($oauth_client = '', $access_token = false) {
         $oauth_client = $this->getOAuthConfig($oauth_client);
-
-        switch($oauth_client) {
-            case 'github':
-                return new GithubOAuth($this->config->$oauth_client);
-            case 'facebook':
-                return new FacebookOAuth($this->config->$oauth_client);
-            default:
-                return false;
+        $full_namespace = explode('\\',__NAMESPACE__);
+        $namespace = reset($full_namespace);
+        if($access_token) {
+            $oauth_class = '\\' . $namespace  . '\\' . ucwords($oauth_client) . '\Users';
+            $parameters = $access_token;
+        } else {
+            $oauth_class = '\\' . $namespace  . '\\' . ucwords($oauth_client) . '\OAuth';
+            $parameters = $this->config->$oauth_client;
         }
-    }
-
-    private function getOAuthUser($access_token, $oauth_client = '') {
-        switch($this->getOAuthConfig($oauth_client)) {
-            case 'github':
-                return new GithubUsers($access_token);
-            case 'facebook':
-                return new FacebookUsers($access_token);
-            default:
-                return false;
-        }
+        return new $oauth_class($parameters);
     }
 
     private function getOAuthConfig($oauth_client) {
