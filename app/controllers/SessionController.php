@@ -238,6 +238,21 @@ class SessionController extends Controller
         return $this->discussionsRedirect();
     }
 
+    /**
+     * @return \Phalcon\Http\ResponseInterface
+     */
+    public function logoutAction()
+    {
+        $this->session->remove('identity');
+        $this->session->remove('identity-name');
+        $this->session->remove('identity-moderator');
+        $this->session->remove('identity-gravatar');
+        $this->session->remove('identity-theme');
+
+        $this->flashSession->success('Goodbye!');
+        return $this->discussionsRedirect();
+    }
+
     private function getOAuth($oauth_client = '', $access_token = false) {
         $oauth_client = $this->getOAuthConfig($oauth_client);
         $full_namespace = explode('\\',__NAMESPACE__);
@@ -257,20 +272,5 @@ class SessionController extends Controller
             return $this->config->oauth_client['default'];
         else
             return $oauth_client;
-    }
-
-    /**
-     * @return \Phalcon\Http\ResponseInterface
-     */
-    public function logoutAction()
-    {
-        $this->session->remove('identity');
-        $this->session->remove('identity-name');
-        $this->session->remove('identity-moderator');
-        $this->session->remove('identity-gravatar');
-        $this->session->remove('identity-theme');
-
-        $this->flashSession->success('Goodbye!');
-        return $this->discussionsRedirect();
     }
 }
