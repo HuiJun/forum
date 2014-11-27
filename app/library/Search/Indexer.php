@@ -64,7 +64,7 @@ class Indexer
                 foreach ($queryResponse['hits']['hits'] as $hit) {
                     $post = Posts::findFirstById($hit['fields']['id'][0]);
                     if ($post) {
-                        if ($hit['fields']['karma'][0] > 0 && ($post->number_replies > 0 || $post->accepted_answer == 'Y')) {
+                        if ($hit['fields']['karma'][0] > 0) {
                             $score = $hit['_score'] * 250 + $hit['fields']['karma'][0] + $d;
                             if (!$returnPosts) {
                                 $results[$score] = array(
